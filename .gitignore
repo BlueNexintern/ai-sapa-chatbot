@@ -1,0 +1,4 @@
+data/.env
+
+data/out/20250923_155434/vector_chunks.jsonl
+data/out/20250923_155434/vector_docs.jsonl
