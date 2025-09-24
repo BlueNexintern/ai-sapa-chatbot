@@ -1,29 +1,66 @@
-/* 기본 변수 */
+/** App.css */
+/** =========================
+    기본 변수 (라이트)
+    ========================= */
 :root {
   --bg: #f4f4f5;
   --panel: #ffffff;
   --text: #0a0a0a;
   --muted: #6b7280;
   --border: #e5e7eb;
-  --accent: #10b981; /* emerald-500 */
-  --accent-strong: #059669; /* emerald-600 */
-  --ring: #34d399; /* emerald-400 */
+
+  --accent: #10b981;            /** emerald-500 */
+  --accent-strong: #059669;     /** emerald-600 */
+
+  /** 포커스/하이라이트 회색 */
+  --ring: #d1d5db;              /** gray-300 */
+  --ring-bg: rgba(209,213,219,.35);
+  --focus-bg: rgba(0,0,0,.02);
+
+  /** 입력 텍스트/플레이스홀더 색상 */
+  --input-text: #0f172a;
+  --input-placeholder: #9ca3af;
+
+  /** 채팅 리스트와 입력 영역의 좌우 패딩 통일 */
+  --pad: 16px;
 }
 
+/** 다크 테마 변수 오버라이드 */
 .theme--dark {
   --bg: #0b0b0c;
   --panel: #1f1f22;
   --text: #f4f4f5;
   --muted: #a1a1aa;
   --border: #3f3f46;
+
   --accent: #10b981;
   --accent-strong: #10b981;
-  --ring: #34d399;
+
+  --ring: #3f3f46;                 /** gray-700 */
+  --ring-bg: rgba(63,63,70,.45);
+  --focus-bg: rgba(255,255,255,.04);
+
+  --input-text: #f3f4f6;
+  --input-placeholder: #a1a1aa;
 }
 
-/* 레이아웃 */
-.cc-app { min-height: 100vh; background: var(--bg); }
-.cc-container { max-width: 768px; margin: 0 auto; padding: 24px 16px; }
+/** =========================
+    레이아웃
+    ========================= */
+.cc-app {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;              /** 추가: 전체 세로 높이를 flex로 관리 */
+}
+.cc-container {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;              /** 추가 */
+  flex-direction: column;     /** 추가 */
+  flex: 1 1 auto;             /** 추가: 부모(cc-app)의 남은 세로 공간 채우기 */
+  box-sizing: border-box;
+}
 
 .cc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .cc-title { display: flex; align-items: center; gap: 8px; color: var(--text); }
@@ -34,61 +71,320 @@
   display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 12px; border-radius: 12px; font-size: 14px;
   color: var(--text); background: var(--panel); border: 1px solid var(--border);
+  cursor: pointer;
 }
 .cc-btn:hover { filter: brightness(0.98); }
 
-/* 검색 패널 */
+/** =========================
+    검색 패널
+    ========================= */
 .cc-search { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); margin-bottom: 12px; }
 .cc-search-row { display: flex; align-items: center; gap: 8px; }
 .cc-search-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 14px; padding: 8px 4px; }
 .cc-search-icon { color: var(--muted); }
-.cc-search-clear { padding: 4px; border-radius: 8px; border: none; background: transparent; color: var(--text); }
+.cc-search-clear { padding: 4px; border-radius: 8px; border: none; background: transparent; color: var(--text); cursor: pointer; }
 .cc-search-clear:hover { background: rgba(127,127,127,0.15); }
 .cc-search-meta { margin-top: 6px; font-size: 12px; color: var(--muted); }
 .cc-search-results { margin: 8px 0 0; max-height: 160px; overflow-y: auto; list-style: none; padding: 0; }
 .cc-search-item { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; }
-.cc-search-link { border: none; background: none; text-align: left; color: var(--text); cursor: pointer; text-decoration: underline transparent; }
+.cc-search-link { border: none; background: none; text-align: left; color: var(--text); cursor: pointer; text-decoration: underline transparent; padding: 0; border-radius: 8px; }
 .cc-search-link:hover { text-decoration-color: var(--text); }
+.cc-search-link:active { background: var(--ring-bg); }
 
-/* 카드 & 채팅 */
-.cc-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); display: flex; flex-direction: column; height: 70vh; }
-.cc-chat-list { flex: 1; overflow-y: auto; padding: 16px; }
+/** =========================
+    카드 & 채팅
+    ========================= */
+.cc-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;     /** 추가: 남은 세로 공간을 카드가 차지 */
+  min-height: 0;      /** 중요: 내부 스크롤 영역이 제대로 줄어들 수 있게 */
+  overflow: hidden;   /** 포커스/하이라이트 넘침 차단 */
+}
+
+.cc-chat-list {
+  flex: 1 1 auto;
+  min-height: 0;      /** 중요: 자식이 오버플로우될 때 스크롤이 살아남 */
+  overflow-y: auto;
+  padding: var(--pad);
+}
+
 .cc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.cc-row { display: flex; align-items: flex-start; gap: 12px; }
 
-/* 아바타 */
+/** 메시지 행 & 정렬 */
+.cc-row { display: flex; align-items: flex-start; gap: 12px; width: 100%; }
+.cc-row.is-assistant { justify-content: flex-start; }
+.cc-row.is-user { justify-content: flex-end; }
+
+/** 좌/우 정렬: 아바타와 컨텐츠(버블+첨부) 순서 고정 */
+.cc-row.is-assistant .cc-avatar { order: 1; }
+.cc-row.is-assistant .cc-content { order: 2; }
+.cc-row.is-user .cc-content { order: 1; }
+.cc-row.is-user .cc-avatar { order: 2; }
+
+/** 아바타 */
 .cc-avatar { width: 32px; height: 32px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; }
 .cc-avatar.is-assistant { background: #e5e7eb; color: #111827; }
-.cc-avatar.is-user { background: var(--accent); color: white; }
+.cc-avatar.is-user { background: var(--accent); color: #ffffff; }
 .theme--dark .cc-avatar.is-assistant { background: #3f3f46; color: #f4f4f5; }
 
-/* 말풍선 */
-.cc-bubble { max-width: 80%; padding: 8px 12px; border-radius: 16px; font-size: 14px; line-height: 1.6; }
-.cc-bubble.is-assistant { background: #f4f4f5; color: #111827; }
-.cc-bubble.is-user { background: var(--accent); color: #ffffff; }
+/** 메시지 컨텐츠 래퍼(버블 + 첨부를 세로로) */
+.cc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 80%;
+  align-items: flex-start;        /** assistant: 왼쪽 기준(자연 너비 유지) */
+}
+.cc-row.is-user .cc-content {
+  align-items: flex-end;          /** user: 오른쪽 기준(자연 너비 유지) */
+}
+
+/** 말풍선: 내용 너비 기준으로만 확장 */
+.cc-bubble {
+  display: inline-block;          /** 내용 길이만큼 너비 */
+  max-width: 100%;                /** 너무 길면 부모 한도 내에서 줄바꿈 */
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.cc-bubble.is-assistant { background: #f4f4f5; color: #111827; border-top-left-radius: 6px; }
+.cc-bubble.is-user { background: var(--accent); color: #ffffff; border-top-right-radius: 6px; }
 .theme--dark .cc-bubble.is-assistant { background: #3f3f46; color: #f4f4f5; }
 
-/* 로딩 */
+/** 로딩 */
 .cc-loading { gap: 8px; color: var(--muted); }
 .cc-spin { animation: cc-rot 1s linear infinite; }
 @keyframes cc-rot { to { transform: rotate(360deg); } }
 
-/* 입력 영역 */
-.cc-input-area { border-top: 1px solid var(--border); padding: 8px; }
-.cc-textarea { width: 100%; resize: none; background: transparent; color: var(--text); border: 1px solid transparent; padding: 10px 12px; border-radius: 12px; outline: none; font-size: 14px; }
-.cc-textarea::placeholder { color: var(--muted); }
-.cc-textarea:focus { border-color: var(--border); }
-.cc-input-bar { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; }
-.cc-input-bar small { color: var(--muted); }
-.cc-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; font-size: 14px; border: none; color: #fff; background: var(--accent); cursor: pointer; }
-.cc-btn-primary:hover { background: var(--accent-strong); }
-.cc-btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+/** =========================
+    입력 영역 (가로 한 줄)
+    ========================= */
+.cc-input-area {
+  border-top: 1px solid var(--border);
+  padding: var(--pad);                 /** 메시지창 좌우 패딩과 통일 */
+  box-sizing: border-box;
+}
 
-/* 기록 */
+/** 핵심: 왼쪽(사진 버튼) + 가운데(입력창) + 오른쪽(전송 버튼) */
+.cc-input-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 8px;
+  align-items: center;
+}
+
+/** 그리드 미지원 환경 대비 폴백 */
+@supports not (grid-template-columns: auto minmax(0, 1fr) auto) {
+  .cc-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cc-textarea { flex: 1 1 auto; }
+}
+
+/** 사진 추가 버튼(좌측) */
+.cc-attach-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+}
+.cc-attach-btn:hover { filter: brightness(0.98); }
+.cc-file { display: none; } /** 숨김 파일 입력 */
+
+/** 입력창: 남는 폭 전부 사용 + 가독성 강화 */
+.cc-textarea {
+  grid-column: 2 / 3;
+  min-width: 0;
+  width: 100%;
+  resize: none;
+  background: transparent;
+  color: var(--input-text);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: 12px;
+  outline: none;
+  font-size: 14px;
+  min-height: 40px;
+  line-height: 20px;
+}
+.cc-textarea::placeholder { color: var(--input-placeholder); opacity: 0.95; }
+
+/** 포커스: 얇은 회색 + 아주 옅은 배경 */
+.cc-textarea:focus {
+  border-color: var(--ring);
+  box-shadow: none;
+  background-color: var(--focus-bg);
+}
+
+/** 전송 버튼: 항상 오른쪽 칸, 오른쪽 끝 정렬 */
+.cc-btn-primary {
+  grid-column: 3 / 4;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  border: none;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cc-btn-primary:hover { background: var(--accent-strong); }
+/** 비활성이어도 not-allowed 커서 없애기(항상 손모양 유지) */
+.cc-btn-primary,
+.cc-btn-primary:disabled,
+.cc-btn-primary[disabled] { cursor: pointer !important; }
+.cc-btn-primary:disabled:hover,
+.cc-btn-primary[disabled]:hover { background: var(--accent); }
+
+/** 첨부 미리보기 영역(입력줄 아래) */
+.cc-attachments {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/** 첨부 썸네일 + 삭제 버튼 */
+.cc-attach-item {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+.cc-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cc-attach-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/** =========================
+    기록 패널
+    ========================= */
 .cc-history { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); margin-top: 16px; }
 .cc-history-title { display: flex; align-items: center; gap: 8px; color: var(--text); margin-bottom: 8px; }
-.cc-history-list { margin: 0; padding-left: 18px; color: var(--muted); }
+.cc-history-title-actions { margin-left: auto; }
+.cc-history-empty { color: var(--muted); }
 
-/* 하이라이트 & 스크롤 표시 */
+/** 리스트 및 행 */
+.cc-history-list { margin: 0; padding-left: 0; list-style: none; }
+.cc-history-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 18px;              /** 기존 들여쓰기 느낌 유지 */
+  margin: 4px 0;
+}
+
+/** 텍스트 버튼(항목) */
+.cc-history-text {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+}
+
+/** 선택 토글 버튼(체크박스 아이콘) */
+.cc-history-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/** 액션 바 */
+.cc-history-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/** =========================
+    하이라이트 & 포커스 링
+    ========================= */
 .cc-mark { background: rgba(52, 211, 153, 0.35); padding: 0 3px; border-radius: 4px; }
-.cc-ring { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 14px; transition: outline-color .2s ease; }
+
+/** 클릭/점프 효과 링 (리스트 아이템에 적용) */
+.cc-ring {
+  outline: 1px solid var(--ring);  /** 얇은 회색 */
+  outline-offset: 1px;
+  border-radius: 14px;
+  animation: cc-ring-pulse 900ms ease-out;
+}
+
+/** 링 펄스 */
+@keyframes cc-ring-pulse {
+  0%   { outline-offset: 0;   background-color: var(--ring-bg); }
+  50%  { outline-offset: 3px; background-color: var(--ring-bg); }
+  100% { outline-offset: 1px; background-color: transparent; }
+}
+
+/** =========================
+    메시지 첨부 썸네일(대화 내)
+    ========================= */
+.cc-msg-attachments {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-self: flex-start;         /** 기본: 왼쪽 기준 */
+}
+.cc-row.is-user .cc-msg-attachments {
+  align-self: flex-end;           /** 사용자 메시지: 오른쪽 기준 */
+}
+.cc-msg-attachments .cc-thumb {
+  width: 96px;
+  height: 96px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
